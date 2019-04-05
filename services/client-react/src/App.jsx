@@ -4,6 +4,9 @@ import ContentClassTabs from "./components/ContentClassTabs";
 import TasksList from "./components/TasksList";
 import AddTask from "./components/AddTask";
 import Header from "./components/Header";
+import { Switch, Route, BrowserRouter } from 'react-router-dom';
+import Dashboard from './components/Dashboard';
+import Home from './components/Home';
 
 class App extends Component {
   constructor() {
@@ -31,28 +34,35 @@ class App extends Component {
     .catch((err) => { console.log(err); });
   };
 
+
+
   render() {
     return (
+      <BrowserRouter>
       <div className="App" id="app-maindiv">
         {/* Header with the title and settings button */}
         <div className="Header">
           <Header/>
         </div>
-
-        {/* DX-automator's category tabs */}
         <div className="ContentClassTabs" id="tabs-container">
-          <ContentClassTabs/>
-          <div id="add-task-button-conatiner">
-          {/* TODO: define dynamic input fields */}
-            <AddTask call={this.addTask}/>
-          </div>
-        </div>
-
-        {/* Body with all the content */}
-        <div className="Body">
-          <TasksList tasks={this.state.tasks}/>
+        <ContentClassTabs/>
+        <div id="add-task-button-conatiner">
+        {/* TODO: define dynamic input fields */}
+          <AddTask call={this.addTask}/>
         </div>
       </div>
+      <div className="Body">
+      <TasksList tasks={this.state.tasks}/>
+    </div>
+        <main>
+      <Switch>
+        <Route exact path='/' component={Home}/>
+        <Route path='/dashboard/triage' component={Dashboard}/>
+      </Switch>
+    </main>
+        </div>
+
+      </BrowserRouter>
     );
   }
 }

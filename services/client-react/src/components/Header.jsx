@@ -7,9 +7,9 @@ const Header = () => {
     <PageHeader>
         <PageHeading title="DX-automator">
             <DropdownButton label="Settings" type="secondary" icon="gear">
-            <a>Work</a>
-            <a>in</a>
-            <a>Progress</a>
+            <a href="/">Work</a>
+            <a href="/">in</a>
+            <a href="/">Progress</a>
             </DropdownButton>
         </PageHeading>
         <Divider id="divider"/>
