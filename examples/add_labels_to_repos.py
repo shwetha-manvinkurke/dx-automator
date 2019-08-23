@@ -6,8 +6,7 @@ from common.repos import ALL_REPOS
 
 request_body = {
     "org": "sendgrid",
-    "repo": "sendgrid-python",
-    "username": "thinkingserious"
+    "repo": "sendgrid-python"
 }
 response = client.github.add_label_to_repo.post(request_body=request_body)
 print(response.body)

@@ -264,3 +264,38 @@ def get_releases():
                 end_cursor = ', after: {}'.format(result.get('pageInfo').get('endCursor'))
             
     return jsonify(releases), 200
+
+@github_blueprint.route('/github/add_label_to_repo', methods=['POST'])
+def add_label_to_repo():
+    """Add a label to a repo"""
+    req_data = request.get_json(force=True)
+    github_org =  '"' + req_data['org'] + '"' or '"' + current_app.config['GITHUB_ORG'] + '"'
+    repository = '"' + req_data['repo'] + '"'
+    query = f"""query {{
+        organization(login:{github_org}) {{
+            repository(name:{repository}) {{
+                id
+            }}
+        }}
+    }}"""
+    result, status = GraphQL.run_query(query)
+    if not status:
+        return "GITHUB_TOKEN may not be valid", 400
+    elif result:
+        repo_id = result.get('organization').get('repository').get('id')
+        repo_id = '"' + repo_id + '"'
+    
+    mutation = f"""mutation {{
+        createLabel(input:{{color:"#1d76db",name:"test label",repositoryId:{repo_id}}}) {{
+            label {{
+                id
+            }}
+        }}
+    }}"""
+    result, status = GraphQL.run_query(mutation)
+    print(status)
+    if not status:
+        return "GITHUB_TOKEN may not be valid", 400
+    elif result:
+        print(result)
+    return "success", 200

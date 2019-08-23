@@ -125,7 +125,8 @@ class GraphQL(object):
         url = "https://api.github.com/graphql"
         github_token = current_app.config['GITHUB_TOKEN']
         headers = {
-            "Authorization": f"bearer {github_token}"
+            "Authorization": f"bearer {github_token}",
+            "Accept": "application/vnd.github.bane-preview+json"
         }
         response = requests.post(url, json={'query': query}, headers=headers)
         if response.ok:
