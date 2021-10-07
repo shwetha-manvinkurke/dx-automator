@@ -1,7 +1,8 @@
-name: metrics weekly twilio
+name: twilio metrics weekly
 
 # Controls when the action will run.
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 #  # Triggers the workflow weekly on Fridays at 7AM PT
 #  schedule:
 #    - cron: '0 18 * * 5'
