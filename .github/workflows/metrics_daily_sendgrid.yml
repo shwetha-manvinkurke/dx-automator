@@ -1,14 +1,14 @@
 name: metrics daily sendgrid
 
 # Controls when the action will run.
-on: [pull_request]
+on: workflow_dispatch
   # Triggers the workflow every business day at 7AM PT
 #  schedule:
 #    - cron: '0 15 * * 1-5'
 
 
 #   Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+#  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

@@ -1,7 +1,7 @@
 name: metrics weekly sendgrid
 
 # Controls when the action will run.
-on: [pull_request]
+on: workflow_dispatch
 #  # Triggers the workflow weekly on Fridays at 7AM PT
 #  schedule:
 #    - cron: '0 17 * * 5'
