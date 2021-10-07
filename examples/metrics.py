@@ -1,3 +1,4 @@
+import argparse
 import statistics
 import sys
 from collections import defaultdict
@@ -10,6 +11,8 @@ from common.admins import ADMINS
 from common.google_api import get_spreadsheets
 from common.issue import substitute, get_issues, Issue, get_delta_days, get_date_time
 from common.repos import ALL_REPOS
+
+from common.repos import TWILIO_REPOS, SENDGRID_REPOS, ORGANIZATIONS
 
 GOOGLE_SHEET_ID = '1cQOOT5aYxfXOSwEV0cJyf01KkV-uKCBJnKK3PHjouCE'
 GOOGLE_SHEET_NAME_DAILY = 'Daily'
@@ -31,14 +34,61 @@ class MetricCollector:
         # Load up the spreadsheet connector early to validate credentials.
         self.spreadsheets = get_spreadsheets()
 
-    def run(self, start_date: str, end_date: str, reporting_period: str = None) -> None:
-        reporting_period = reporting_period or end_date
+    # TODO: remove
+    # def run(self, start_date: str, end_date: str, reporting_period: str = None) -> None:
+    #     reporting_period = reporting_period or end_date
+    #     global_node = self.metrics
+    #
+    #     for org in ALL_REPOS:
+    #         org_node = global_node['nodes'][org]
+    #
+    #         for repo in ALL_REPOS[org]:
+    #             repo_node = org_node['nodes'][repo]
+    #
+    #             self.process_repo(repo_node, org, repo, start_date, end_date)
+    #
+    #     # If we have any untagged issues, print them
+    #     if self.untagged_issues:
+    #         print('These issues need a "type" label:')
+    #         for issue in self.untagged_issues:
+    #             print(issue.url)
+    #
+    #     for org in global_node['nodes']:
+    #         org_node = global_node['nodes'][org]
+    #
+    #         for repo in org_node['nodes']:
+    #             repo_node = org_node['nodes'][repo]
+    #
+    #             self.aggregate(repo_node)
+    #             name = f'https://github.com/{org}/{repo}'
+    #             self.summarize(name, reporting_period, repo_node)
+    #
+    #     self.output_google_sheet(reporting_period=reporting_period)
+
+    # def run(self, start_date: str, end_date: str, reporting_period: str = None) -> None:
+    def run(self, run_options: dict) -> None:
+        start_date = run_options['start_date']
+        end_date = run_options['end_date']
+        reporting_period = run_options['reporting_period'] or end_date
+        # TODO: rename
+        main_org = run_options['org']
+        repos_to_include = run_options['include']
+        repos_to_exclude = run_options['exclude']
+
+        repos = ALL_REPOS
+        if main_org:
+            repos = ALL_REPOS[main_org]
+        if repos_to_include:
+            repos = repos_to_include
+        if repos_to_exclude:
+            repos = ALL_REPOS - repos_to_exclude
+
         global_node = self.metrics
 
-        for org in ALL_REPOS:
+        for org in repos:
             org_node = global_node['nodes'][org]
 
-            for repo in ALL_REPOS[org]:
+            for repo in repos:
                 repo_node = org_node['nodes'][repo]
 
                 self.process_repo(repo_node, org, repo, start_date, end_date)
@@ -66,7 +116,8 @@ class MetricCollector:
                      start_date: str, end_date: str) -> None:
         start_date = get_date_time(start_date)
         end_date = get_date_time(end_date)
-        stale_date = datetime.strptime(datetime.now().strftime(DATE_TIME_FORMAT), DATE_TIME_FORMAT) - timedelta(days=STALE_DAYS)
+        stale_date = datetime.strptime(datetime.now().strftime(DATE_TIME_FORMAT), DATE_TIME_FORMAT) - timedelta(
+            days=STALE_DAYS)
         stale_date = get_date_time(stale_date.strftime(DATE_TIME_FORMAT))
 
         issues = get_repo_issues(org, repo)
@@ -315,13 +366,51 @@ def run_now(reporting_period: str) -> None:
         MetricCollector().run(start_date=start_date, end_date=today, reporting_period=reporting_period)
 
 
+# TODO: rename
+def run_now_updated(reporting_period: str, org: str, to_include: list, to_exclude: list):
+    today = datetime.now().strftime(DATE_TIME_FORMAT)
+    options = {
+        'start_date': today,
+        'end_date': today,
+        'reporting_period': reporting_period,
+        'org': org,
+        'include': to_include,
+        'exclude': to_exclude
+    }
+
+    if reporting_period == 'daily':
+        MetricCollector().run(options)
+    if reporting_period == 'weekly':
+        start_date = datetime.strptime(today, DATE_TIME_FORMAT) - timedelta(days=7)
+        start_date = start_date.strftime(DATE_TIME_FORMAT)
+        options['start_date'] = start_date
+        MetricCollector().run(options)
+
+
+def parse_args():
+    options_parser = argparse.ArgumentParser(description='dx-automator')
+    options_parser.add_argument('--period', '-p', default='daily', choices=['daily', 'weekly'])
+    options_parser.add_argument('--exclude', '-e', nargs='*', default=[], choices=SENDGRID_REPOS + TWILIO_REPOS)
+    options_parser.add_argument('--include', '-i', nargs='*', default=[], choices=SENDGRID_REPOS + TWILIO_REPOS)
+    options_parser.add_argument('--org', '-o', action='store', choices=ORGANIZATIONS)
+
+    args = vars(options_parser.parse_args())
+
+    return options_parser, args
+
+
+# if __name__ == '__main__':
+#     reporting_period = sys.argv[1]
+#     run_now(reporting_period)
+
+
 if __name__ == '__main__':
-    reporting_period = sys.argv[1]
+    parser, args = parse_args()
+    if not args:
+        parser.print_help()
+        sys.exit(1)
+
+    print(args)
+    reporting_period = args['period']
+
     run_now(reporting_period)
-
-    # run_backfill()
-
-    # Q1
-    # MetricCollector().run(start_date='2020-01-01',
-    #                       end_date='2020-04-01',
-    #                       reporting_period='2020-Q1')
