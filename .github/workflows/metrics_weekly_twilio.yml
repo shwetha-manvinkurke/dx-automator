@@ -1,4 +1,4 @@
-name: metrics weekly
+name: metrics weekly twilio
 
 # Controls when the action will run.
 on: [pull_request]

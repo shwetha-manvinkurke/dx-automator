@@ -1,4 +1,4 @@
-name: metrics daily
+name: metrics daily sendgrid
 
 # Controls when the action will run.
 on: [pull_request]
