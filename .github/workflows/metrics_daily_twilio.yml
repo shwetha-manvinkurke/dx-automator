@@ -1,7 +1,7 @@
 name: metrics daily
 
 # Controls when the action will run.
-on: [pull request]
+on: [pull_request]
 #  # Triggers the workflow every business day at 7AM PT
 #  schedule:
 #    - cron: '0 16 * * 1-5'
