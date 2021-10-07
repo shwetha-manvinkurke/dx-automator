@@ -1,0 +1,57 @@
+name: sendgrid metrics daily
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "actionItems"
+  metrics:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        id: setup_python
+        uses: actions/setup-python@v2
+
+      - name: Install Dependencies
+        id: install_deps
+        run: make install
+
+      - name: Run Metrics on sendgrid repos part 1
+        id: metrics_daily_sendgrid_repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period daily --include sendgrid-csharp sendgrid-go sendgrid-java sendgrid-nodejs)"
+
+      - name: Run Metrics on sendgrid repos part 2
+        id: metrics_daily_sendgrid_repos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period daily --include sendgrid-php sendgrid-python sendgrid-ruby sendgrid-oai)"
+
+      - name: Run Metrics on smtp monorepos
+        id: metrics_daily_sendgrid_monorepos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period daily --include smtpapi-csharp smtpapi-go smtpapi-java smtpapi-nodejs smtpapi-php smtpapi-python smtpapi-ruby)"
+
+      - name: Run Metrics on http client mono repos
+        id: metrics_daily_sendgrid_client
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period daily --include csharp-http-client rest java-http-client php-http-client python-http-client ruby-http-client)"
