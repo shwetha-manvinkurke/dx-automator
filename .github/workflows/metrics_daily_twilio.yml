@@ -2,6 +2,9 @@ name: twilio metrics daily
 
 # Controls when the action will run.
 on:
+  # Triggers the workflow every business day at 9AM PT
+  schedule:
+    - cron: '0 16 * * 1-5'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

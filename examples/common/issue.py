@@ -315,6 +315,7 @@ def post_query(query: str) -> List[Dict]:
         paged_query = substitute(query, {'cursor': f'after: "{cursor}"' if cursor else ''})
 
         response = requests.post(url, json={'query': paged_query}, headers=headers)
+        print(f'response headers: {response.headers}')
         response.raise_for_status()
         response = response.json()
 
