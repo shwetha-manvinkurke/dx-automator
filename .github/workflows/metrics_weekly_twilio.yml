@@ -2,6 +2,9 @@ name: twilio metrics weekly
 
 # Controls when the action will run.
 on:
+  # Triggers the workflow at 11AM PT
+  schedule:
+    - cron: '0 18 * * 1-5'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -26,9 +29,29 @@ jobs:
         run: make install
 
       - name: Run Metrics
-        id: metrics_weekly_twilio
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
         run: |
-          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --org twilio)"
+          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include twilio-csharp twilio-java twilio-node twilio-php)"
+
+      - name: Run Metrics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include twilio-python twilio-ruby twilio-cli twilio-cli-core)"
+
+      - name: Run Metrics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include twilio-oai plugin-debugger homebrew-brew twilio-go)"
+
+      - name: Run Metrics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
+        run: |
+          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include twilio-oai-generator terraform-provider-twilio)"
