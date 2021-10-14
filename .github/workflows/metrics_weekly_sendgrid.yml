@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_API_CREDS: ${{ secrets.GOOGLE_API_CREDS }}
         run: |
-          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include sendgrid-csharp sendgrid-go sendgrid-java sendgrid-nodejs sendgrid-php sendgrid-python sendgrid-ruby sendgrid-oai)"
+          echo "$(source venv/bin/activate && python examples/metrics.py --period weekly --include sendgrid-csharp sendgrid-go sendgrid-java sendgrid-nodejs)"
 
       - name: Run Metrics on sendgrid repos
         id: metrics_weekly_sendgrid_repos_2
